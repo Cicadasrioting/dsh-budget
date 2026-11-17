@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const BUNDLE = join(HERE, '..', 'lib', 'client.js');
+const BUNDLE = process.env.BUNDLE ?? join(HERE, '..', 'lib', 'client.js');
 const BASE = (process.env.DSH_WEB_URL ?? '').replace(/\/$/, '');
 
 // ---- 假 React：够了，只用到这几个 hook ----

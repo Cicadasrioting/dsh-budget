@@ -1,6 +1,6 @@
 {
   "name": "dsh-budget",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "type": "module",
   "description": "按月额度 / 工作日日均 / 结转累积的 DeepSeek 用量预算插件：侧边栏面板 + 桌宠提醒 + 超额自动停用，账单直接读平台用量接口",
   "license": "MIT",
