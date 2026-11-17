@@ -1,0 +1,66 @@
+{
+  "name": "dsh-budget",
+  "version": "0.4.0",
+  "type": "module",
+  "description": "按月额度 / 工作日日均 / 结转累积的 DeepSeek 用量预算插件：侧边栏面板 + 桌宠提醒 + 超额自动停用，账单直接读平台用量接口",
+  "license": "MIT",
+  "author": "dsh-budget contributors",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cicadasrioting/dsh-budget.git"
+  },
+  "homepage": "https://github.com/Cicadasrioting/dsh-budget#readme",
+  "bugs": {
+    "url": "https://github.com/Cicadasrioting/dsh-budget/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek",
+    "budget",
+    "cost",
+    "pet",
+    "quota"
+  ],
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "smoke": "node scripts/client-smoke.mjs"
+  },
+  "peerDependencies": {
+    "dsh-cost-meter": ">=1.9.0",
+    "dsh-pet": ">=0.4.0"
+  },
+  "peerDependenciesMeta": {
+    "dsh-pet": {
+      "optional": true
+    }
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-sidebar"
+      ]
+    }
+  },
+  "dependencies": {}
+}

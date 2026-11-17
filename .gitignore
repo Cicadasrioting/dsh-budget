@@ -1,0 +1,20 @@
+# 依赖与构建产物
+node_modules/
+dist/
+build/
+*.tgz
+
+# 本地数据与凭据（插件自己写到 ~/.dsh，这里兜底防手滑）
+budget.json
+budget-billing.json
+budget-state.json
+budget-runtime.json
+.env
+.env.*
+
+# 编辑器与系统垃圾
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
