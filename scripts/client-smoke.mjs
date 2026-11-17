@@ -17,10 +17,13 @@ let hookCursor = 0;
 const resetHooks = () => {
   hookCursor = 0;
 };
+// 面板第一个 useState 是 data；第二遍渲染时把它播种成真 /status，用来验「有数据」的形态
+let seedData = null;
 const React = {
   createElement: (type, props, ...children) => ({ type, props: props ?? {}, children: children.flat() }),
   useState: (init) => {
     hookCursor += 1;
+    if (hookCursor === 1 && seedData !== null) return [seedData, () => {}];
     return [typeof init === 'function' ? init() : init, () => {}];
   },
   useEffect: () => {
@@ -32,6 +35,29 @@ const React = {
   },
 };
 const JsxRuntime = { jsx: React.createElement, jsxs: React.createElement, Fragment: 'Fragment' };
+
+/** 在渲染树里按 className 找节点；all=true 时收集全部。 */
+function findClass(node, className, all = false) {
+  const hits = [];
+  const walk = (n) => {
+    if (n === null || typeof n !== 'object') return;
+    if (Array.isArray(n)) {
+      for (const item of n) walk(item);
+      return;
+    }
+    const own = n.props?.className;
+    if (typeof own === 'string' && own.split(/\s+/).includes(className)) hits.push(n);
+    // 假 React 不渲染组件：遇到函数组件就手动调一次，好钻进它的子树
+    if (typeof n.type === 'function') {
+      resetHooks();
+      walk(n.type(n.props ?? {}));
+      return;
+    }
+    for (const child of n.children ?? []) walk(child);
+  };
+  walk(node);
+  return all ? hits : (hits[0] ?? null);
+}
 
 // ---- 加载束 ----
 let exported = null;
@@ -106,5 +132,16 @@ if (BASE) {
   const status = await realFetch(BASE + '/plugins/dsh-budget/status').then((r) => r.json());
   if (status?.ok !== true) throw new Error('/status 没返回 ok：' + JSON.stringify(status).slice(0, 120));
   console.log('status.plan.remaining =', status.plan.remaining, '| gate =', JSON.stringify(status.gate));
+
+  // 第二遍：把真数据播进 useState，面板得渲染成「有数据」的形态
+  seedData = status;
+  resetHooks();
+  const filled = main.component(props);
+  if (filled?.children?.length !== page.children.length) throw new Error('有数据时卡片数量变了');
+  const chart = findClass(filled, 'BGD_chart');
+  if (chart === null) throw new Error('平台账单里没有画柱状图（BGD_chart）');
+  const bars = findClass(chart, 'BGD_chartBar', true);
+  if (bars.length === 0) throw new Error('柱状图里一根柱子都没有');
+  console.log('chart bars =', bars.length, '| today cost =', status.billing?.todayCost);
 }
 console.log('SMOKE OK');
